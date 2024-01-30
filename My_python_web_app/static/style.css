@@ -1,0 +1,88 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.tabl {
+  margin: 10px;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+form {
+    margin-top: 20px;
+}
+
+input[type="text"], input[type="email"], input[type="submit"] {
+    padding: 6px;
+    margin-right: 10px;
+}
+
+input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+
+/* Стили попапа да я знаю что можно и нужно сделать отдельные файлы и все стили импортировать в этот файл)) */
+.openPopup {
+    margin-left: 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.popupOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+  }
+  
+  .popup h2 {
+    margin-top: 0;
+  }
+  
+  .popupForm {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .popupForm input,
+  .popupForm button {
+    margin-bottom: 10px;
+  }
+
+/*проверка валидности*/
+
+.invalid {
+  border: 1px solid red;
+}
+
+.error-message {
+  color: red;
+}

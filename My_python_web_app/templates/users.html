@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Пользователи</title>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+</head>
+<body>
+<h1>Пользователи</h1>
+<table class="tabl">
+    <tr>
+        <th>ID</th>
+        <th>Фамилия</th>
+        <th>Имя</th>
+        <th>Отчество</th>
+        <th>Регион</th>
+        <th>Город</th>
+        <th>Контактный телефон</th>
+        <th>e-mail</th>
+    </tr>
+    {% for user in users %}
+    <tr>
+        <td>{{ user[0] }}</td>
+        <td>{{ user[1] }}</td>
+        <td>{{ user[2] }}</td>
+        <td>{{ user[3] }}</td>
+        <td>{{ user[4] }}</td>
+        <td>{{ user[5] }}</td>
+        <td>{{ user[6] }}</td>
+        <td>{{ user[7] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<button class="openPopup">Добавить</button>
+
+
+<div class="popupOverlay">
+    <div class="popup">
+        <h2>Форма добавления</h2>
+
+        <!-- <form action="/users" method="post" class="popupForm myForm">
+            <input type="text" name="second_name" placeholder="Фамилия" data-error="Введите фамилию" required>
+            <input type="text" name="first_name" placeholder="Имя" data-error="Введите имя" required>
+            <input type="text" name="patronymic" placeholder="Отчество" data-error="Введите отчество" required>
+            <input type="number" name="region_id" placeholder="Регион" data-error="Введите регион" required>
+            <input type="number" name="city_id" placeholder="Город" data-error="Введите город" required>
+            <input type="text" name="phone" placeholder="телефон +7 999 999 99 99" required
+                   pattern="\+7 \d{3} \d{3} \d{2} \d{2}" data-error="Формат +7 999 999 99 99">
+            <input type="email" name="email" placeholder="e-mail" data-error="Введите правильный email" required>
+            <input type="submit" value="Добавить" onclick="validateForm(event)">
+        </form> -->
+
+
+        <form action="/users" method="post" class="popupForm myForm">
+            <input type="text" name="second_name" placeholder="Фамилия" data-error="Введите фамилию" required>
+            <input type="text" name="first_name" placeholder="Имя" data-error="Введите имя" required>
+            <input type="text" name="patronymic" placeholder="Отчество" data-error="Введите отчество" required>
+            
+
+            <select name="region_id" id="region" onchange="updateCities()">
+                <option value="">Выберите регион</option>
+                <option value="0">Краснодарский край</option>
+                <option value="1">Ростовская область</option>
+                <option value="2">Ставропольский край</option>
+                
+            </select>
+            <select name="city_id" id="city" disabled>
+                <option value="">Выберите город</option>
+                <!-- Города будут добавлены динамически -->
+            </select>
+
+            
+            <input type="text" name="phone" placeholder="телефон +7 999 999 99 99" required
+                   pattern="\+7 \d{3} \d{3} \d{2} \d{2}" data-error="Формат +7 999 999 99 99">
+            <input type="email" name="email" placeholder="e-mail" data-error="Введите правильный email" required>
+            <input type="submit" value="Добавить" onclick="validateForm(event)">
+        </form>
+
+    </div>
+</div>
+
+    <form action="/import_xlsx" method="post" enctype="multipart/form-data">
+        <input type="file" name="xlsx_file">
+        <input type="submit" value="Импортировать из xls/xlsx">
+    </form>
+
+    <form action="/export_xlsx" method="post">
+        <input type="submit" value="Экспорт данных в xlsx">
+    </form>
+
+    <form action="/import_pdf" method="post" enctype="multipart/form-data">
+        <input type="file" name="xlsx_file">
+        <input type="submit" value="Импортировать из pdf">
+    </form>
+
+    <form action="/export_pdf" method="post">
+        <input type="submit" value="Экспорт данных в PDF">
+    </form>
+<script src="/static/script.js"></script>
+</body>
+</html>
+
