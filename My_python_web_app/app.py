@@ -163,11 +163,11 @@ class RequestHandler(BaseHTTPRequestHandler):
                 print(f'city {city_id}')
 
                 if region_id in [r[0] for r in region]:
-                    region_id = region[[r[0] for r in region].index(region_id)][1] + 1
+                    region_id = region[[r[0] for r in region].index(region_id)][1]
                     print(region_id)
 
                 if city_id in [c[0] for c in city]:
-                    city_id = city[[c[0] for c in city].index(city_id)][1] + 1
+                    city_id = city[[c[0] for c in city].index(city_id)][1]
                     print(city_id)
 
                 cursor.execute(
