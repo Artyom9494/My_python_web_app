@@ -102,9 +102,8 @@ class RequestHandler(BaseHTTPRequestHandler):
             post_data = post_data.split('&')
 
             regions = ('Краснодарский край', 'Ростовская область', 'Ставропольский край')
-            city = (
-                ["Краснодар", "Кропоткин", "Славянск"], ["Ростов", "Шахты", "Батайск"],
-                ["Ставрополь", "Пятигорск", "Кисловодск"])
+            city = ("Краснодар", "Кропоткин", "Славянск", "Ростов", "Шахты", "Батайск",
+                    "Ставрополь", "Пятигорск", "Кисловодск")
 
             # Разделение данных на поля
             second_name = unquote_plus(post_data[0].split('=')[1])
@@ -120,12 +119,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                 region_id = 2
 
             city_id = unquote_plus(post_data[4].split('=')[1])
-            if city_id in city[0]:
-                city_id = 0
-            elif city_id in city[1]:
-                city_id = 1
-            elif city_id in city[2]:
-                city_id = 2
+            city_id = city.index(city_id)
 
             phone = unquote_plus(post_data[5].split('=')[1])
             email = unquote_plus(post_data[6].split('=')[1])
@@ -151,6 +145,13 @@ class RequestHandler(BaseHTTPRequestHandler):
             with open('imported_file.xlsx', 'wb') as file:
                 file.write(body)
 
+            cursor.execute('''SELECT region_name, id from regions''')
+            region = cursor.fetchall()
+            print(region)
+            cursor.execute('''SELECT city_name, id FROM cities''')
+            city = cursor.fetchall()
+            print(city)
+
             # Открываем файл с помощью openpyxl
             workbook = openpyxl.load_workbook('imported_file.xlsx')
             sheet = workbook.active
@@ -158,6 +159,17 @@ class RequestHandler(BaseHTTPRequestHandler):
             # Перебираем строки в файле и добавляем данные в базу данных
             for row in sheet.iter_rows(min_row=2, values_only=True):
                 second_name, first_name, patronymic, region_id, city_id, phone, email = row
+                print(f'region {region_id}')
+                print(f'city {city_id}')
+
+                if region_id in [r[0] for r in region]:
+                    region_id = region[[r[0] for r in region].index(region_id)][1] + 1
+                    print(region_id)
+
+                if city_id in [c[0] for c in city]:
+                    city_id = city[[c[0] for c in city].index(city_id)][1] + 1
+                    print(city_id)
+
                 cursor.execute(
                     "INSERT INTO users (second_name, first_name, patronymic, region_id, city_id, phone, email) VALUES (?, ?, ?, ?, ?, ?, ?)",
                     (second_name, first_name, patronymic, region_id, city_id, phone, email))
@@ -190,16 +202,32 @@ class RequestHandler(BaseHTTPRequestHandler):
             for col, column_name in enumerate(column_names, start=1):
                 sheet.cell(row=1, column=col, value=column_name)
 
-            # Запись данных в документ xlsx
+            # Запись данных в документ xlsx из users
             for row, user in enumerate(users, start=2):
                 sheet.cell(row=row, column=1, value=user[0])
                 sheet.cell(row=row, column=2, value=user[1])
                 sheet.cell(row=row, column=3, value=user[2])
                 sheet.cell(row=row, column=4, value=user[3])
-                sheet.cell(row=row, column=5, value=user[4])
-                sheet.cell(row=row, column=6, value=user[5])
+                # sheet.cell(row=row, column=5, value=user[4])
+                # sheet.cell(row=row, column=6, value=user[5])
                 sheet.cell(row=row, column=7, value=user[6])
                 sheet.cell(row=row, column=8, value=user[7])
+
+            cursor.execute('''SELECT r.region_name
+                              FROM users AS u
+                              INNER JOIN regions AS r ON u.region_id = r.id;''')
+            region_citi = cursor.fetchall()
+            # Запись данных в документ xlsx из regions
+            for row, reg_ci in enumerate(region_citi, start=2):
+                sheet.cell(row=row, column=5, value=reg_ci[0])
+
+            cursor.execute('''SELECT c.city_name
+                              FROM cities AS c 
+                              INNER JOIN users AS u ON u.city_id = c.id''')
+            cities = cursor.fetchall()
+            # Запись данных в документ xlsx из cities
+            for row, city in enumerate(cities, start=2):
+                sheet.cell(row=row, column=6, value=city[0])
 
             # Сохранение документа xlsx
             workbook.save('users.xlsx')
@@ -273,7 +301,10 @@ class RequestHandler(BaseHTTPRequestHandler):
         elif self.path == '/export_pdf':
             pdfmetrics.registerFont(TTFont('DejaVuSans', 'static/fonts/DejaVuSans.ttf', 'utf-8'))
             # Получение данных из базы данных
-            cursor.execute("SELECT * FROM users")
+            cursor.execute('''SELECT u.id, u.second_name, u.first_name, u.patronymic, r.region_name, c.city_name, u.phone, u.email
+                              FROM users AS u
+                              JOIN regions AS r ON u.region_id = r.id
+                              JOIN cities AS c ON u.city_id = c.id;''')
             users = cursor.fetchall()
 
             # Создание PDF файла с резюме
